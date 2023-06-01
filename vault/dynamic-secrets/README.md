@@ -31,7 +31,7 @@ $ vault write demo-db/config/demo-db \
     allowed_roles="dev-postgres" \
     connection_url="postgresql://{{username}}:{{password}}@postgres-postgresql.postgres.svc.cluster.local:5432/postgres?sslmode=disable" \
     username="postgres" \
-    password="<POSTGRES_PASSWORD from deploy postgres server step above>"
+    password="<위 Deploy Postgres Server 스텝에서 확인한 POSTGRES_PASSWORD 값>"
 
 $ vault write demo-db/roles/dev-postgres \
     db_name=demo-db \
