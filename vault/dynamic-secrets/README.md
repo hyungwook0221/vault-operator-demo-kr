@@ -11,7 +11,7 @@ $ export POSTGRES_PASSWORD=$(kubectl get secret --namespace postgres postgres-po
 $ echo $POSTGRES_PASSWORD
 ```
 
-For OpenShift
+### For OpenShift
 
 ```shell
 $ helm upgrade --install postgres bitnami/postgresql --namespace postgres -f postgres/values.yaml
@@ -115,9 +115,9 @@ $ kubectl create ns demo-ns
 $ kubectl apply -f vault/dynamic-secrets/.
 ```
 
-For OpenShift
+### For OpenShift
 
-> **Not recommended in production**
+> **프로덕션 환경에서는 권장하지 않습니다.**
 
 ```shell
 $ oc create sa demo-sa -n demo-ns

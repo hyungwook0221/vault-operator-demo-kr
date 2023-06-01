@@ -1,8 +1,9 @@
 # Vault Operator Demo
 
-This repository contains some samples on how to use the Vault operator with different Cloud hosted Kubernetes solutions.
+이 저장소에는 다양한 클라우드 호스팅 Kubernetes 솔루션에서 Vault 오퍼레이터를 사용하는 방법에 대한 몇 가지 샘플을 제공합니다.
 
 ## Deploy your Kubernetes cluster
+다음은 각종 Kubernetes 클러스터 배포를 위한 샘플 구성파일 입니다.
 
 ### KIND
 
