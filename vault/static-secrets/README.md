@@ -52,8 +52,8 @@ exit
 ## Create a new namespace for the demo app & the static secret CRDs
 
 ```bash
-# app 네임스페이스 생성
-kubectl create ns app
+# demo-ns 네임스페이스 생성(다른 실습에서 생성하였다면 생략)
+kubectl create demo-ns app
 
 # VaultStaticSecret CRD 배포
 kubectl apply -f vault/static-secrets/vault-kv-secret.yaml
@@ -65,6 +65,13 @@ kubectl apply -f vault/static-secrets/vault-kvv2-secret.yaml
 ```bash
 kubectl get secret secretkv -n app -o json | jq -r .data._raw | base64 -D
 kubectl get secret secretkvv2 -n app -o json | jq -r .data._raw | base64 -D
+```
+
+## Create the App
+
+```bash
+kubectl apply -f vault/static-secrets/app-static-deployment.yaml
+kubectl apply -f vault/static-secrets/app-static-secret.yaml
 ```
 
 ## Change the secrets and verify they are synced
