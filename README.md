@@ -1,6 +1,12 @@
 # Vault Operator Demo
-
 이 저장소에는 다양한 클라우드 호스팅 Kubernetes 솔루션에서 Vault 오퍼레이터를 사용하는 방법에 대한 몇 가지 샘플을 제공합니다.
+
+![img](https://raw.githubusercontent.com/hyungwook0221/img/main/uPic/vso-img.png)
+
+> 💡 참고  
+Vault Secret Operator(VSO)에 대하여 더욱 자세한 내용은 다음에서 확인할 수 있습니다.
+- [Vault Secrets Operator 개요](https://docmoa.github.io/04-HashiCorp/06-Vault/01-Information/vault-secret-operator/1-vso-overview.html)
+- [Kubernetes Vault 통합방안 3가지 비교](https://docmoa.github.io/04-HashiCorp/06-Vault/04-UseCase/vault-k8s-integration-three-methods.html)
 
 ## Deploy your Kubernetes cluster
 다음은 각종 Kubernetes 클러스터 배포를 위한 샘플 구성파일 입니다.
