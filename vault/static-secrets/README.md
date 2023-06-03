@@ -35,7 +35,7 @@ EOF
 # Role 추가
 vault write auth/kubernetes/role/role1 \
       bound_service_account_names=default \
-      bound_service_account_namespaces=app \
+      bound_service_account_namespaces=demo-ns \
       policies=dev \
       audience=vault \
       ttl=24h
