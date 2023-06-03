@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vso-static-demo
+  namespace: demo-ns
+  labels:
+    test: vso-static-demo
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      test: vso-static-demo
+  template:
+    metadata:
+      labels:
+        test: vso-static-demo
+    spec:
+      volumes:
+        - name: static-secrets
+          secret:
+            secretName: "secret-kvv2"
+      containers:
+        - name: example
+          image: nginx:latest
+          volumeMounts:
+            - name: static-secrets
+              mountPath: /etc/secrets
+              readOnly: true
+          resources:
+            limits:
+              cpu: "0.5"
+              memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "50Mi"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+              httpHeaders:
+                - name: X-Custom-Header
+                  value: Awesome
+            initialDelaySeconds: 3
+            periodSeconds: 3
