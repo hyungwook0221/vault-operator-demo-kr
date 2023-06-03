@@ -1,7 +1,7 @@
 # Vault Operator Demo
 이 저장소에는 다양한 클라우드 호스팅 Kubernetes 솔루션에서 Vault 오퍼레이터를 사용하는 방법에 대한 몇 가지 샘플을 제공합니다.
 
-![img](https://raw.githubusercontent.com/hyungwook0221/img/main/uPic/vso-img.png)
+![img](https://raw.githubusercontent.com/hyungwook0221/img/main/uPic/vso-img2.png)
 
 > 💡 참고  
 Vault Secret Operator(VSO)에 대하여 더욱 자세한 내용은 다음에서 확인할 수 있습니다.
