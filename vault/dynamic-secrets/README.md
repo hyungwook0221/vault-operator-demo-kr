@@ -33,14 +33,16 @@ $ vault write demo-db/config/demo-db \
     username="postgres" \
     password="<위 Deploy Postgres Server 스텝에서 확인한 POSTGRES_PASSWORD 값>"
 
+# 주기적으로 DB Credentials 정보가 변경되는 것을 확인하기 위해 60s 마다 갱신되도록 설정
+# 데모시연 시 실제 K8s Secret 정보가 Sync되고 demo deployment 앱이 재기동 되는 것을 확인할 수 있음
 $ vault write demo-db/roles/dev-postgres \
     db_name=demo-db \
     creation_statements="CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}'; \
         GRANT ALL PRIVILEGES ON DATABASE postgres TO \"{{name}}\";" \
     backend=demo-db \
     name=dev-postgres \
-    default_ttl="1h" \
-    max_ttl="24h"
+    default_ttl="60s" \
+    max_ttl="1h"
 
 $ vault policy write demo-auth-policy-db - <<EOT
 path "demo-db/creds/dev-postgres" {
