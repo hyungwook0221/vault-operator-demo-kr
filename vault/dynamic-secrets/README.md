@@ -120,7 +120,7 @@ $ kubectl apply -f vault/dynamic-secrets/.
 
 ### For OpenShift
 
-> **프로덕션 환경에서는 권장하지 않습니다.**
+> **📌 프로덕션 환경에서는 권장하지 않습니다.**
 
 ```shell
 $ oc create sa demo-sa -n demo-ns
