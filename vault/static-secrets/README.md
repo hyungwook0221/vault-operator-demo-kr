@@ -1,5 +1,9 @@
 # Working with static secrets
 
+<p align="center">
+  <img src="https://content.hashicorp.com/api/assets?product=tutorials&version=main&asset=public%2Fimg%2Fvault%2Fkubernetes%2Fdiagram-secrets-operator.png">
+</p>
+
 ## Configure Vault
 
 ```shell
