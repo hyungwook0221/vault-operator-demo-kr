@@ -34,15 +34,17 @@ vault write auth/kubernetes/role/pki-role \
     audience=vault \
     ttl=24h
 
-# PKI 사전 설정
+# root CA 생성
 vault write pki/root/generate/internal \
     common_name=example.com \
     ttl=768h
 
+# CRL 생성 : Certificate Revocation List(인증서 해지 목록) 엔드포인트 작성
 vault write pki/config/urls \
     issuing_certificates="http://127.0.0.1:8200/v1/pki/ca" \
     crl_distribution_points="http://127.0.0.1:8200/v1/pki/crl"
 
+# Role 생성 : 미리 Role을 구성해 놓으면 사용자 및 앱은 지정된 규칙에 따라 인증서를 발급받을 수 있음
 vault write pki/roles/default \
     allowed_domains=example.com \
     allowed_domains=localhost \
@@ -52,7 +54,7 @@ vault write pki/roles/default \
 exit
 ```
 
-## Create a new namespace for the demo app & the static secret CRDs
+## Create a new namespace for the demo app & the PKI secret CRDs
 
 ```bash
 # demo-ns 네임스페이스 생성(다른 실습에서 생성하였다면 생략)
@@ -70,6 +72,7 @@ kubectl apply -f vault/pki/vault-pki-secret.yaml
 ```
 
 ## Create the App
+- Ingress + SVC + Deployment 배포
 
 ```bash
 kubectl apply -f vault/pki/app-pki-deploy-ingress-svc.yaml
