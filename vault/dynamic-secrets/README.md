@@ -11,7 +11,7 @@ kubectl create ns postgres
 helm repo add bitnami https://charts.bitnami.com/bitnami
 
 # postgresql 설치
-helm upgrade --install postgres bitnami/postgresql --namespace postgres --set auth.audit.logConnections=true
+helm upgrade --install postgres bitnami/postgresql --namespace postgres --set audit.logConnections=true
 
 # 발급된 POSTGRES_PASSWORD 환경변수 설정
 export POSTGRES_PASSWORD=$(kubectl get secret --namespace postgres postgres-postgresql -o jsonpath="{.data.postgres-password}" | base64 -d)
