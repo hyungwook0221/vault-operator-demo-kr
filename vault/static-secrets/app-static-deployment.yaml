@@ -22,12 +22,35 @@ spec:
         - name: static-secrets
           secret:
             secretName: "secret-kvv2"
+        - name: html
+          emptyDir: {}
       containers:
+        - name: vso-static
+          image: alpine:latest
+          command: ["/bin/sh", "-c"]
+          args:
+            - while true;
+              do 
+                echo "===File Copy Pre Check===";
+                cat /tmp/empty/index.html;
+                cat /tmp/static-secrets/username >> /tmp/empty/index.html;
+                echo "<br>" >> /tmp/empty/index.html;
+                cat /tmp/static-secrets/password >> /tmp/empty/index.html;
+                echo "<br>" >> /tmp/empty/index.html;
+                echo "===File Copy Post Check===";
+                cat /tmp/empty/index.html;
+                sleep 30;
+              done;
+          volumeMounts:
+            - name: html
+              mountPath: /tmp/empty
+            - name: static-secrets
+              mountPath: /tmp/static-secrets
         - name: example
           image: nginx:latest
           volumeMounts:
-            - name: static-secrets
-              mountPath: /etc/secrets
+            - name: html
+              mountPath: /usr/share/nginx/html
               readOnly: true
           resources:
             limits:

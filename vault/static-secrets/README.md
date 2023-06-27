@@ -53,7 +53,7 @@ exit
 
 ```bash
 # demo-ns 네임스페이스 생성(다른 실습에서 생성하였다면 생략)
-kubectl create demo-ns app
+kubectl create ns demo-ns 
 
 # VaultStaticSecret CRD 배포
 kubectl apply -f vault/static-secrets/vault-kv-secret.yaml
@@ -71,19 +71,20 @@ kubectl get secret secretkvv2 -n app -o json | jq -r .data._raw | base64 -D
 
 ```bash
 kubectl apply -f vault/static-secrets/app-static-deployment.yaml
-kubectl apply -f vault/static-secrets/app-static-secret.yaml
+# kubectl apply -f vault/static-secrets/app-static-secret.yaml
 ```
+
+### Check `index.html` Files on Web UI
+- static-user-kvv2 및 static-password-kvv2 확인
+![img](https://raw.githubusercontent.com/hyungwook0221/img/main/uPic/ZUjqTL.jpg)
 
 ## Change the secrets and verify they are synced
 
 ```bash
 # Vault Shell 접근
 kubectl exec --stdin=true --tty=true vault-0 -n vault -- /bin/sh
-
 vault kv put kv/webapp/config username="new-static-user" password="new-static-password"
-
 vault kv put kvv2/webapp/config username="new-static-user-kvv2" password="new-static-password-kvv2"
-
 exit
 ```
 
@@ -96,3 +97,7 @@ exit
 kubectl get secret secretkv -n app -o json | jq -r .data._raw | base64 -D
 kubectl get secret secretkvv2 -n app -o json | jq -r .data._raw | base64 -D
 ```
+
+### Check `index.html` Files on Web UI
+- new-static-user-kvv2 및 new-static-password-kvv2 로 변경된 것 확인
+![img](https://raw.githubusercontent.com/hyungwook0221/img/main/uPic/Xozc0D.jpg)
