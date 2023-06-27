@@ -15,7 +15,8 @@ Vault Secret Operator(VSO)에 대하여 더욱 자세한 내용은 다음에서 
 
 ```bash
 # kind 클러스터 구성
-kind get clusters | grep --silent "^kind$$" || kind create cluster --wait=5m --image kindest/node:v1.25.3 --name kind --config infra/kind/config.yaml
+kind get clusters | grep --silent "^kind$$" || kind create cluster --wait=5m \
+    --image kindest/node:v1.25.3 --name kind --config infra/kind/config.yaml
 
 # context 설정
 kubectl config use-context kind-kind
@@ -50,7 +51,8 @@ export AWS_SESSION_TOKEN="..."
 terraform -chdir=infra/eks/ init -upgrade
 terraform -chdir=infra/eks/ apply -auto-approve
 
-aws eks --region $(terraform -chdir=infra/eks/ output -raw region) update-kubeconfig --name $(terraform -chdir=infra/eks/ output -raw cluster_name)
+aws eks --region $(terraform -chdir=infra/eks/ output -raw region) \
+    update-kubeconfig --name $(terraform -chdir=infra/eks/ output -raw cluster_name)
 ```
 
 ### Azure (AKS)
@@ -79,19 +81,24 @@ helm repo update
 helm search repo hashicorp/vault
 
 # vault 헬름차트 배포
-helm install vault hashicorp/vault -n vault --create-namespace --values vault/vault-server-values.yaml
+helm install vault hashicorp/vault -n vault \
+    --create-namespace --values vault/vault-server-values.yaml
 ```
 
 For OpenShift
 
 ```bash
-helm install vault hashicorp/vault -n vault --create-namespace --values vault/vault-server-values.yaml --set "global.openshift=true"
+helm install vault hashicorp/vault -n vault \
+    --create-namespace --values vault/vault-server-values.yaml \
+    --set "global.openshift=true"
 ```
 
 ## Deploy the Vault Operator
 
 ```bash
-helm install vault-secrets-operator hashicorp/vault-secrets-operator --version 0.1.0-beta.1 -n vault-secrets-operator-system --create-namespace --values vault/vault-operator-values.yaml
+helm install vault-secrets-operator hashicorp/vault-secrets-operator \
+    --version 0.1.0 -n vault-secrets-operator-system \
+    --create-namespace --values vault/vault-operator-values.yaml
 ```
 
 ## Using the Vault Operator
