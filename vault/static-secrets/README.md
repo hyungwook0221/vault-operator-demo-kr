@@ -76,7 +76,10 @@ kubectl apply -f vault/static-secrets/app-static-deployment.yaml
 
 ### Check `index.html` Files on Web UI
 - static-user-kvv2 및 static-password-kvv2 확인
-![img](https://raw.githubusercontent.com/hyungwook0221/img/main/uPic/ZUjqTL.jpg)
+<!-- ![img](https://raw.githubusercontent.com/hyungwook0221/img/main/uPic/ZUjqTL.jpg) -->
+<p align="center">
+  <img src="https://raw.githubusercontent.com/hyungwook0221/img/main/uPic/ZUjqTL.jpg" width=50% height=50%>
+</p>
 
 ## Change the secrets and verify they are synced
 
@@ -100,4 +103,7 @@ kubectl get secret secretkvv2 -n app -o json | jq -r .data._raw | base64 -D
 
 ### Check `index.html` Files on Web UI
 - new-static-user-kvv2 및 new-static-password-kvv2 로 변경된 것 확인
-![img](https://raw.githubusercontent.com/hyungwook0221/img/main/uPic/Xozc0D.jpg)
+<!-- ![img](https://raw.githubusercontent.com/hyungwook0221/img/main/uPic/Xozc0D.jpg) -->
+<p align="center">
+  <img src="https://raw.githubusercontent.com/hyungwook0221/img/main/uPic/Xozc0D.jpg" width=50% height=50%>
+</p>
