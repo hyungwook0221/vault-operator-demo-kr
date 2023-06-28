@@ -11,7 +11,7 @@ kubectl create ns postgres
 helm repo add bitnami https://charts.bitnami.com/bitnami
 
 # postgresql 설치
-helm upgrade --install postgres bitnami/postgresql --namespace postgres --set audit.logConnections=true --set auth.postgresPassword="HashiCorp!@"
+helm upgrade --install postgres bitnami/postgresql --namespace postgres --set audit.logConnections=true --set auth.postgresPassword="HashiCorp@"
 
 # 발급된 POSTGRES_PASSWORD 환경변수 설정
 # export POSTGRES_PASSWORD=$(kubectl get secret --namespace postgres postgres-postgresql -o jsonpath="{.data.postgres-password}" | base64 -d)
@@ -45,7 +45,7 @@ vault write demo-db/config/demo-db \
   allowed_roles="dev-postgres" \
   connection_url="postgresql://{{username}}:{{password}}@postgres-postgresql.postgres.svc.cluster.local:5432/postgres?sslmode=disable" \
   username="postgres" \
-  password="HashiCorp!@"
+  password="HashiCorp@"
 
 # Role 생성
 # 참고1:주기적으로 DB Credentials 정보가 변경되는 것을 확인하기 위해 TTL 60s 설정
@@ -160,6 +160,6 @@ kubectl get secret vso-db-demo-created -n demo-ns -o json | jq -r .data._raw | b
 # PostgreSQL pod에 접속
 
 # 로그인
-export PGPASSWORD="HashiCorp!@"
+export PGPASSWORD="HashiCorp@"
 psql -U postgres -c "SELECT usename, valuntil FROM pg_user;"
 ```
