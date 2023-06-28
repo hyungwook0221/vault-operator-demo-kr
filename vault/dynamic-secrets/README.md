@@ -14,7 +14,7 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 helm upgrade --install postgres bitnami/postgresql --namespace postgres --set audit.logConnections=true --set auth.postgresPassword="HashiCorp@"
 
 # 발급된 POSTGRES_PASSWORD 환경변수 설정
-# export POSTGRES_PASSWORD=$(kubectl get secret --namespace postgres postgres-postgresql -o jsonpath="{.data.postgres-password}" | base64 -d)
+export POSTGRES_PASSWORD=$(kubectl get secret --namespace postgres postgres-postgresql -o jsonpath="{.data.postgres-password}" | base64 -d)
 
 # POSTGRES_PASSWORD 확인
 echo $POSTGRES_PASSWORD
