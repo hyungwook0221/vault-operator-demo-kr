@@ -54,7 +54,7 @@ vault write auth/demo-pki/config \
 vault write auth/demo-pki/role/pki-role -<<EOF
 {
   "bound_service_account_names": ["default"],
-  "bound_service_account_namespaces": ["testing"],
+  "bound_service_account_namespaces": ["pki-demo-ns"],
   "token_ttl": 3600,
   "token_policies": ["pki-dev"],
   "audience": "vault"
@@ -72,14 +72,18 @@ EOF
 
 1. 네임스페이스 생성 : `pki-demo-ns`
 ```bash
-# pki-demo-ns 네임스페이스 생성
 kubectl create namespace pki-demo-ns
+```
+
+2. 시크릿 생성 : `pki-tls`
+```bash
+kubectl create secret generic pki-tls -n pki-demo-ns
 
 # VaultPKISecret CRD 배포
 kubectl apply -f vault/pki/vault-pki-secret.yaml
 ```
 
-2. PKI Secrets 생성확인
+3. PKI Secrets 생성확인
 
 ```bash
 # 명령어 확인 추가
@@ -92,7 +96,6 @@ kubectl apply -f vault/pki/vault-pki-secret.yaml
 - Deployment
 
 ```bash
-kubectl create secret generic pki-tls -n pki-demo-ns
 kubectl apply -f vault/pki/app-pki-deploy-ingress-svc.yaml
 ```
 
