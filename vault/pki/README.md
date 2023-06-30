@@ -71,12 +71,7 @@ exit
 kubectl create namespace pki-demo-ns
 ```
 
-2. 시크릿 생성 : `pki-tls`
-```bash
-kubectl create secret generic pki-tls -n pki-demo-ns
-```
-
-3. 각종 리소스 배포
+2. 각종 리소스 배포
 - Ingress
 - SVC
 - Deployment
@@ -85,35 +80,9 @@ kubectl create secret generic pki-tls -n pki-demo-ns
 kubectl apply -f vault/pki/.
 ```
 
-4. PKI Secrets 생성확인
+3. Ingress Controller 배포
 
-```bash
-# 명령어 확인 추가
-# kubectl get secret secretkv -n app -o json | jq -r .data._raw | base64 -D
-```
-
-## Secrets 변경 및 Sync 확인
-
-```bash
-# Vault Shell 접근
-kubectl exec --stdin=true --tty=true vault-0 -n vault -- /bin/sh
-
-exit
-```
-
-## Verify the static secrets were updated (wait 30s)
-> 📌 참고 : 30초마다 데이터 갱신을 확인  
-> Vault KV 저장소에 저장된 데이터 수정 후 실제 Secret에서 데이터 변경되는지 확인!
-
-```bash
-# 생성된 Secret 데이터 확인
-curl -kv
-
-```
-
----
-
-## Ingress Controller 배포
+> 필자는 인증서에 대한 갱신 및 활용방안을 위해 IngressController를 추가배포 후 실습을 진행합니다.
 
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
@@ -124,16 +93,49 @@ kubectl wait --namespace ingress-nginx \
   --timeout=90s
 ```
 
+4. PKI Secrets 생성확인
+
+```bash
+# 명령어 확인 추가
+kubectl get secret pki-tls -n pki-demo-ns -o json | jq -r .data._raw | base64 -D
+```
+
+![img](https://raw.githubusercontent.com/hyungwook0221/img/main/uPic/9GmI0T.jpg)
+
+
+## Verify the static secrets were updated (wait 30s)
+> 📌 참고 : 30초마다 데이터 갱신을 확인  
+> Vault KV 저장소에 저장된 데이터 수정 후 실제 Secret에서 데이터 변경되는지 확인!
+
+
+## 인증서 확인(명령어)
 ```bash
 $ curl -k https://localhost:38443/tls-app/hostname
 tls-app
 
 $ curl -kvI https://localhost:38443/tls-app/hostname
-...
+# 갱신 전
 * Server certificate:
 *  subject: CN=localhost
-*  start date: Mar 17 05:53:28 2023 GMT
-*  expire date: Mar 17 05:54:58 2023 GMT
+*  start date: Jun 30 13:03:31 2023 GMT
+*  expire date: Jun 30 13:05:01 2023 GMT
 *  issuer: CN=example.com
 ...
+
+# 갱신 후
+* Server certificate:
+*  subject: CN=localhost
+*  start date: Jun 30 13:04:16 2023 GMT
+*  expire date: Jun 30 13:05:46 2023 GMT
+*  issuer: CN=example.com
+
+...
 ```
+
+## 인증서 확인(UI)
+
+- 인증서 자동갱신 전
+![img](https://raw.githubusercontent.com/hyungwook0221/img/main/uPic/HazyNh.jpg)
+
+- 인증서 자동갱신 후
+![img](https://raw.githubusercontent.com/hyungwook0221/img/main/uPic/VyhNaq.jpg)
