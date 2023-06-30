@@ -11,36 +11,30 @@ kubectl exec --stdin=true --tty=true vault-0 -n vault -- /bin/sh
 
 2. PKI 시크릿엔진 활성화
 ```bash
-vault secrets enable -path=pki pki
+vault secrets enable pki
 ```
 
 3. PKI Roles 생성 : 미리 Role을 구성해 놓으면 사용자 및 앱은 지정된 규칙에 따라 인증서를 발급받을 수 있음
 ```bash
-vault write pki/roles/secret -<<EOF
-{
-  "ttl": "3600",
-  "allow_ip_sans": true,
-  "key_type": "rsa",
-  "key_bits": 4096,
-  "allowed_domains": ["example.com"],
-  "allow_subdomains": true,
-  "allowed_uri_sans": ["uri1.example.com", "uri2.example.com"]
-}
-EOF
+vault write pki/roles/default \
+    allowed_domains=example.com \
+    allowed_domains=localhost \
+    allow_subdomains=true \
+    max_ttl=72h
 ```
 
-4. ROOT CA 생성
+4. CRL 생성
+```bash
+vault write pki/config/urls \
+    issuing_certificates="http://127.0.0.1:8200/v1/pki/ca" \
+    crl_distribution_points="http://127.0.0.1:8200/v1/pki/crl"
+```
+
+5. ROOT CA 생성
 ```bash
 vault write pki/root/generate/internal \
-  common_name="Root CA" \
-  ttl="315360000" \
-  format="pem" \
-  private_key_format="der" \
-  key_type="rsa" \
-  key_bits=4096 \
-  exclude_cn_from_sans=true \
-  ou="My OU" \
-  organization="My organization"
+    common_name=example.com \
+    ttl=72h
 ```
 
 ## Kubernetes Auth 설정
@@ -66,6 +60,8 @@ path "pki/*" {
   capabilities = ["read", "create", "update"]
 }
 EOF
+
+exit
 ```
 
 ## 네임스페이스 생성 및 PKI Secrets CRD 생성
@@ -78,25 +74,22 @@ kubectl create namespace pki-demo-ns
 2. 시크릿 생성 : `pki-tls`
 ```bash
 kubectl create secret generic pki-tls -n pki-demo-ns
-
-# VaultPKISecret CRD 배포
-kubectl apply -f vault/pki/vault-pki-secret.yaml
 ```
 
-3. PKI Secrets 생성확인
-
-```bash
-# 명령어 확인 추가
-# kubectl get secret secretkv -n app -o json | jq -r .data._raw | base64 -D
-```
-
-## 샘플 애플리케이션 배포
+3. 각종 리소스 배포
 - Ingress
 - SVC
 - Deployment
 
 ```bash
-kubectl apply -f vault/pki/app-pki-deploy-ingress-svc.yaml
+kubectl apply -f vault/pki/.
+```
+
+4. PKI Secrets 생성확인
+
+```bash
+# 명령어 확인 추가
+# kubectl get secret secretkv -n app -o json | jq -r .data._raw | base64 -D
 ```
 
 ## Secrets 변경 및 Sync 확인
@@ -129,4 +122,18 @@ kubectl wait --namespace ingress-nginx \
   --for=condition=ready pod \
   --selector=app.kubernetes.io/component=controller \
   --timeout=90s
+```
+
+```bash
+$ curl -k https://localhost:38443/tls-app/hostname
+tls-app
+
+$ curl -kvI https://localhost:38443/tls-app/hostname
+...
+* Server certificate:
+*  subject: CN=localhost
+*  start date: Mar 17 05:53:28 2023 GMT
+*  expire date: Mar 17 05:54:58 2023 GMT
+*  issuer: CN=example.com
+...
 ```
