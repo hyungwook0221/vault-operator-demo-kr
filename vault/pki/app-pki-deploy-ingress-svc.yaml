@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: tls-app
-  namespace: demo-ns
+  namespace: pki-demo-ns
   labels:
     app: vso-tls-demo
 spec:
@@ -32,7 +32,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: tls-app-service
-  namespace: demo-ns
+  namespace: pki-demo-ns
 spec:
   selector:
     app: vso-tls-demo
@@ -44,7 +44,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: tls-example-ingress
-  namespace: demo-ns
+  namespace: pki-demo-ns
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:

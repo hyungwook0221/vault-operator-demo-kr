@@ -6,7 +6,7 @@ metadata:
   labels:
     test: vso-db-demo
 spec:
-  replicas: 3
+  replicas: 2
   strategy:
     rollingUpdate:
       maxUnavailable: 1

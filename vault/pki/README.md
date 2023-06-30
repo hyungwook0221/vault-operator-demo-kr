@@ -4,81 +4,99 @@
 
 ## Configure Vault
 
+1. Vault Shell 접근
 ```bash
-# Vault Shell 접근
 kubectl exec --stdin=true --tty=true vault-0 -n vault -- /bin/sh
+```
 
-# Kubernetes 인증 활성화(다른 실습에서 생성하였다면 생략)
-vault auth enable kubernetes
+2. PKI 시크릿엔진 활성화
+```bash
+vault secrets enable -path=pki pki
+```
 
-# Kubernetes 인증구성(다른 실습에서 생성하였다면 생략)
-vault write auth/kubernetes/config \
-  kubernetes_host="https://$KUBERNETES_PORT_443_TCP_ADDR:443"
+3. PKI Roles 생성 : 미리 Role을 구성해 놓으면 사용자 및 앱은 지정된 규칙에 따라 인증서를 발급받을 수 있음
+```bash
+vault write pki/roles/secret -<<EOF
+{
+  "ttl": "3600",
+  "allow_ip_sans": true,
+  "key_type": "rsa",
+  "key_bits": 4096,
+  "allowed_domains": ["example.com"],
+  "allow_subdomains": true,
+  "allowed_uri_sans": ["uri1.example.com", "uri2.example.com"]
+}
+EOF
+```
 
-# PKI 시크릿엔진 활성화
-vault secrets disable pki
-vault secrets enable pki
+4. ROOT CA 생성
+```bash
+vault write pki/root/generate/internal \
+  common_name="Root CA" \
+  ttl="315360000" \
+  format="pem" \
+  private_key_format="der" \
+  key_type="rsa" \
+  key_bits=4096 \
+  exclude_cn_from_sans=true \
+  ou="My OU" \
+  organization="My organization"
+```
 
-# PKI 정책추가
-vault policy write pki-policy - <<EOF
+## Kubernetes Auth 설정
+```bash
+vault auth enable -path demo-pki kubernetes
+
+vault write auth/demo-pki/config \
+    kubernetes_host="https://$KUBERNETES_PORT_443_TCP_ADDR:443" \
+    disable_iss_validation=true
+
+vault write auth/demo-pki/role/pki-role -<<EOF
+{
+  "bound_service_account_names": ["default"],
+  "bound_service_account_namespaces": ["testing"],
+  "token_ttl": 3600,
+  "token_policies": ["pki-dev"],
+  "audience": "vault"
+}
+EOF
+
+vault policy write pki-dev -<<EOF
 path "pki/*" {
   capabilities = ["read", "create", "update"]
 }
 EOF
-
-# Role 추가
-vault write auth/kubernetes/role/pki-role \
-    bound_service_account_names=default \
-    bound_service_account_namespaces=demo-ns \
-    policies=pki-policy \
-    audience=vault \
-    ttl=24h
-
-# root CA 생성
-vault write pki/root/generate/internal \
-    common_name=example.com \
-    ttl=768h
-
-# CRL 생성 : Certificate Revocation List(인증서 해지 목록) 엔드포인트 작성
-vault write pki/config/urls \
-    issuing_certificates="http://127.0.0.1:8200/v1/pki/ca" \
-    crl_distribution_points="http://127.0.0.1:8200/v1/pki/crl"
-
-# Role 생성 : 미리 Role을 구성해 놓으면 사용자 및 앱은 지정된 규칙에 따라 인증서를 발급받을 수 있음
-vault write pki/roles/default \
-    allowed_domains=example.com \
-    allowed_domains=localhost \
-    allow_subdomains=true \
-    max_ttl=72h
-
-exit
 ```
 
-## Create a new namespace for the demo app & the PKI secret CRDs
+## 네임스페이스 생성 및 PKI Secrets CRD 생성
 
+1. 네임스페이스 생성 : `pki-demo-ns`
 ```bash
-# demo-ns 네임스페이스 생성(다른 실습에서 생성하였다면 생략)
-kubectl create namespace demo-ns
+# pki-demo-ns 네임스페이스 생성
+kubectl create namespace pki-demo-ns
 
 # VaultPKISecret CRD 배포
 kubectl apply -f vault/pki/vault-pki-secret.yaml
 ```
 
-## Verify the PKI secrets were created
+2. PKI Secrets 생성확인
 
 ```bash
 # 명령어 확인 추가
 # kubectl get secret secretkv -n app -o json | jq -r .data._raw | base64 -D
 ```
 
-## Create the App
-- Ingress + SVC + Deployment 배포
+## 샘플 애플리케이션 배포
+- Ingress
+- SVC
+- Deployment
 
 ```bash
+kubectl create secret generic pki-tls -n pki-demo-ns
 kubectl apply -f vault/pki/app-pki-deploy-ingress-svc.yaml
 ```
 
-## Change the secrets and verify they are synced
+## Secrets 변경 및 Sync 확인
 
 ```bash
 # Vault Shell 접근
@@ -95,4 +113,17 @@ exit
 # 생성된 Secret 데이터 확인
 curl -kv
 
+```
+
+---
+
+## Ingress Controller 배포
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+
+kubectl wait --namespace ingress-nginx \
+  --for=condition=ready pod \
+  --selector=app.kubernetes.io/component=controller \
+  --timeout=90s
 ```

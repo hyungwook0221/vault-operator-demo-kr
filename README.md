@@ -10,8 +10,12 @@ Vault Secret Operator(VSO)에 대하여 더욱 자세한 내용은 다음에서 
 
 ## Deploy your Kubernetes cluster
 다음은 각종 Kubernetes 클러스터 배포를 위한 샘플 구성파일 입니다.
+- KinD
+- GKE
+- EKS
+- AKS
 
-### KIND
+### KinD
 
 ```bash
 # kind 클러스터 구성
@@ -69,7 +73,7 @@ az aks get-credentials --resource-group $(terraform -chdir=infra/aks/ output -ra
 ```
 
 ## Deploy Vault
-
+Helm Chart를 통해 Vault Cluster를 dev 모드로 배포합니다.
 ```bash
 # 저장소 추가
 helm repo add hashicorp https://helm.releases.hashicorp.com
@@ -93,15 +97,15 @@ helm install vault hashicorp/vault -n vault \
     --set "global.openshift=true"
 ```
 
-## Deploy the Vault Operator
-
+## Deploy the Vault Secret Operator(VSO)
+Helm Chart를 통해 Vault Secret Operator를 배포합니다.
 ```bash
 helm install vault-secrets-operator hashicorp/vault-secrets-operator \
     --version 0.1.0 -n vault-secrets-operator-system \
     --create-namespace --values vault/vault-operator-values.yaml
 ```
 
-## Using the Vault Operator
+## Vault Secret Operator 활용방안 3가지
 
 ### * [Working with Static secrets](/vault/static-secrets/README.md)
 ### * [Working with Dynamic secrets](/vault/dynamic-secrets/README.md)
