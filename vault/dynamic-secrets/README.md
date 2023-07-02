@@ -210,7 +210,7 @@ kubectl exec -n demo-ns -it $POD2 -- cat /etc/secrets/password
 
 ```bash
 # PostgreSQL pod에 접속
-kubectl exec -n postgres postgres-postgresql-0 -it -- /bin/sh
+kubectl exec -n postgres postgres-postgresql-0 -it -- /bin/bash
 
 # 로그인
 export PGPASSWORD="HashiCorp@"
