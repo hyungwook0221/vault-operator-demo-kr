@@ -63,8 +63,8 @@ kubectl apply -f vault/static-secrets/vault-kvv2-secret.yaml
 ## Verify the static secrets were created
 
 ```bash
-kubectl get secret secretkv -n app -o json | jq -r .data._raw | base64 -D
-kubectl get secret secretkvv2 -n app -o json | jq -r .data._raw | base64 -D
+kubectl get secret secretkv -n demo-ns -o json | jq -r .data._raw | base64 -D
+kubectl get secret secretkvv2 -n demo-ns -o json | jq -r .data._raw | base64 -D
 ```
 
 ## Create the App

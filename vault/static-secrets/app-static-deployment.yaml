@@ -68,3 +68,16 @@ spec:
                   value: Awesome
             initialDelaySeconds: 3
             periodSeconds: 3
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: vso-static-demo-svc
+  namespace: demo-ns
+spec:
+  selector:
+    test: vso-static-demo
+  ports:
+    - port: 8080
+      nodePort: 30080
+  type: NodePort
