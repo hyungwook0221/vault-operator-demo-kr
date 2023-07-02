@@ -58,6 +58,9 @@ kubectl create ns demo-ns
 # VaultStaticSecret CRD 배포
 kubectl apply -f vault/static-secrets/vault-kv-secret.yaml
 kubectl apply -f vault/static-secrets/vault-kvv2-secret.yaml
+
+# VaultAuth CRD 배포
+kubectl apply -f vault/static-secrets/vault-auth-static.yaml
 ```
 
 ## Verify the static secrets were created

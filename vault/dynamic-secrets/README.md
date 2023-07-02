@@ -188,8 +188,8 @@ oc set sa deployment vso-db-demo demo-sa -n demo-ns
 ## 배포된 파드 및 시크릿 확인
 
 ```bash
-kubectl get secret vso-db-demo -n demo-ns -o json | jq -r .data._raw | base64 -D
-kubectl get secret vso-db-demo-created -n demo-ns -o json | jq -r .data._raw | base64 -D
+kubectl get secret vso-db-demo -n demo-ns -o json | jq -r .data._raw | base64 -d
+kubectl get secret vso-db-demo-created -n demo-ns -o json | jq -r .data._raw | base64 -d
 ```
 
 ```bash
