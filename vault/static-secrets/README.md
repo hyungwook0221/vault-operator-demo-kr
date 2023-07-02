@@ -97,8 +97,8 @@ exit
 
 ```bash
 # 생성된 Secret 데이터 확인
-kubectl get secret secret-kv -n demo-ns -o json | jq -r .data._raw | base64 -D
-kubectl get secret secret-kvv2 -n demo-ns -o json | jq -r .data._raw | base64 -D
+kubectl get secret secret-kv -n demo-ns -o json | jq -r .data._raw | base64 -d
+kubectl get secret secret-kvv2 -n demo-ns -o json | jq -r .data._raw | base64 -d
 ```
 
 ### Check `index.html` Files on Web UI
