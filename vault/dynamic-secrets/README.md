@@ -109,7 +109,7 @@ vault write auth/demo-auth-mount/config \
 ```bash
 vault write auth/demo-auth-mount/role/auth-role \
   bound_service_account_names=default \
-  bound_service_account_namespaces=demo-ns \
+  bound_service_account_namespaces=dynamic-demo-ns \
   token_ttl=0 \
   token_max_ttl=120 \
   token_policies=demo-auth-policy-db \
@@ -156,7 +156,7 @@ exit
 
 1. 네임스페이스 생성
 ```bash
-kubectl create ns demo-ns
+kubectl create ns dynamic-demo-ns
 ```
 
 2. 리소스 배포
@@ -180,37 +180,37 @@ serviceaccount/demo-operator created
 > **📌 프로덕션 환경에서는 권장하지 않습니다.**
 
 ```bash
-oc create sa demo-sa -n demo-ns
-oc adm policy add-scc-to-user privileged -z demo-sa -n demo-ns
-oc set sa deployment vso-db-demo demo-sa -n demo-ns
+oc create sa demo-sa -n dynamic-demo-ns
+oc adm policy add-scc-to-user privileged -z demo-sa -n dynamic-demo-ns
+oc set sa deployment vso-db-demo demo-sa -n dynamic-demo-ns
 ```
 
 ## 배포된 파드 및 시크릿 확인
 
 ```bash
-kubectl get secret vso-db-demo -n demo-ns -o json | jq -r .data._raw | base64 -d
-kubectl get secret vso-db-demo-created -n demo-ns -o json | jq -r .data._raw | base64 -d
+kubectl get secret vso-db-demo -n dynamic-demo-ns -o json | jq -r .data._raw | base64 -d
+kubectl get secret vso-db-demo-created -n dynamic-demo-ns -o json | jq -r .data._raw | base64 -d
 ```
 
 ```bash
-kubectl get pods -n demo-ns
-POD1=$(kubectl get pods -n demo-ns -o jsonpath='{.items[0].metadata.name}')
-POD2=$(kubectl get pods -n demo-ns -o jsonpath='{.items[1].metadata.name}')
+kubectl get pods -n dynamic-demo-ns
+POD1=$(kubectl get pods -n dynamic-demo-ns -o jsonpath='{.items[0].metadata.name}')
+POD2=$(kubectl get pods -n dynamic-demo-ns -o jsonpath='{.items[1].metadata.name}')
 
 # 파드1 Shell 에서 /etc/secrets 확인
-kubectl exec -n demo-ns -it $POD1 -- cat /etc/secrets/username
-kubectl exec -n demo-ns -it $POD1 -- cat /etc/secrets/password
+kubectl exec -n dynamic-demo-ns -it $POD1 -- cat /etc/secrets/username
+kubectl exec -n dynamic-demo-ns -it $POD1 -- cat /etc/secrets/password
 
 # 파드2 Shell 에서 /etc/secrets 확인
-kubectl exec -n demo-ns -it $POD2 -- cat /etc/secrets/username
-kubectl exec -n demo-ns -it $POD2 -- cat /etc/secrets/password
+kubectl exec -n dynamic-demo-ns -it $POD2 -- cat /etc/secrets/username
+kubectl exec -n dynamic-demo-ns -it $POD2 -- cat /etc/secrets/password
 ```
 
 ### 확인 명령
 
 ```bash
 # PostgreSQL pod에 접속
-kubectl exec -n postgres postgres-postgresql-0 -it -- /bin/bash
+kubectl exec -n postgres postgres-postgresql-0 -it -- /bin/sh
 
 # 로그인
 export PGPASSWORD="HashiCorp@"
