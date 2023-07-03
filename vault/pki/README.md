@@ -97,16 +97,14 @@ kubectl wait --namespace ingress-nginx \
 
 ```bash
 # 명령어 확인 추가
-kubectl get secret pki-tls -n pki-demo-ns -o json | jq -r .data._raw | base64 -D
+kubectl get secret pki-tls -n pki-demo-ns -o json | jq -r .data._raw | base64 -d
 ```
 
 ![img](https://raw.githubusercontent.com/hyungwook0221/img/main/uPic/9GmI0T.jpg)
 
 
-## Verify the static secrets were updated (wait 30s)
 > 📌 참고 : 30초마다 데이터 갱신을 확인  
 > Vault KV 저장소에 저장된 데이터 수정 후 실제 Secret에서 데이터 변경되는지 확인!
-
 
 ## 인증서 확인(명령어)
 ```bash

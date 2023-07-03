@@ -1,0 +1,18 @@
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultAuth
+metadata:
+  name: pki-auth
+  namespace: pki-demo-ns
+spec:
+  # type of vault auth
+  method: kubernetes
+
+  # mount path for the k8s auth engine
+  mount: demo-pki
+
+  # k8s vault auth config 
+  kubernetes:
+    role: pki-role
+    serviceAccount: default
+    audiences:
+      - vault

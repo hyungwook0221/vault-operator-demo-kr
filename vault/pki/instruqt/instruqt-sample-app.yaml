@@ -1,0 +1,67 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tls-app
+  namespace: pki-demo-ns
+  labels:
+    app: vso-tls-demo
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: vso-tls-demo
+  template:
+    metadata:
+      labels:
+        app: vso-tls-demo
+    spec:  
+      containers:
+      - command:
+        - /agnhost
+        - netexec
+        - --http-port
+        - "8080"
+        image: registry.k8s.io/e2e-test-images/agnhost:2.39
+        name: tls-app
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: tls-app-service
+  namespace: pki-demo-ns
+spec:
+  selector:
+    app: vso-tls-demo
+  ports:
+    - port: 443
+      targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tls-example-ingress
+  namespace: pki-demo-ns
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+    # secretName: pki-tls
+  - secretName: pki-tls
+  rules:
+  # - host: example.com
+  #   http:
+  - http:
+      paths:
+      - path: /tls-app(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: tls-app-service
+            port:
+              number: 443
