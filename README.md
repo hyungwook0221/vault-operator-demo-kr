@@ -110,3 +110,37 @@ helm install vault-secrets-operator hashicorp/vault-secrets-operator \
 ### * [Working with Static secrets](/vault/static-secrets/README.md)
 ### * [Working with Dynamic secrets](/vault/dynamic-secrets/README.md)
 ### * [Working with PKI](/vault/pki/README.md)
+
+---
+
+# HCP Vault 연동방안
+
+> **제약사항 : 사전에 배포된 Public Cluster & Static Secrets 만 지원**
+
+해당 가이드는 HCP Vault가 사전에 구성되어 있으면 Cluster URL 정보가 Public하게 접근이 가능하다고 가정합니다.
+(또는, 외부 접근 가능한 Endpoint를 가진 Vault Cluster가 구성된 경우를 가정)
+
+## Deploy the Vault Secrets Operator (HCP Vault)
+
+- 환경변수 설정
+```shell
+export VAULT_ADDR="..."
+export VAULT_NAMESPACE="..."
+export VAULT_TOKEN="..."
+```
+
+- `hcp-vault/vault-operator-values.yaml` 값 수정
+```bash
+# 7번째 줄 ${VAULT_ADDR} 값을 HCP Vault의 Public URL로 변경
+# 예시 : "https://vault-public-url.hashicorp.cloud:8200"
+
+helm install vault-secrets-operator hashicorp/vault-secrets-operator \
+    --version 0.1.0 -n vault-secrets-operator-system \
+    --create-namespace --values hcp-vault/vault-operator-values.yaml
+```
+
+## Using the Vault Secrets Operator (HCP Vault)
+
+### * [Working with Static secrets](/hcp-vault/static-secrets/README.md)
+### * [Working with Dynamic secrets](/hcp-vault/dynamic-secrets/README.md)
+### * [Working with PKI](/hcp-vault/pki/README.md)
